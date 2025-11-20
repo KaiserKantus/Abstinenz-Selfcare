@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>Abstinenz-Selfcare-App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+  <style>
+    :root {
+      --mint-main: #a7f3d0;
+      --mint-dark: #059669;
+      --mint-light: #ecfdf5;
+      --accent: #0f766e;
+      --bg: #022c22;
+      --text-main: #022c22;
+      --danger: #fb923c;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #022c22 0%, #064e3b 40%, #022c22 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .app-frame {
+      background: var(--mint-light);
+      width: 100%;
+      max-width: 480px;
+      height: 100vh;
+      max-height: 960px;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app-inner {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    /* TOP MENU – 1/5 HÖHE */
+
+    .top-menu {
+      flex: 0 0 20%;
+      min-height: 20%;
+      padding: 12px 16px 10px;
+      background: rgba(6, 95, 70, 0.96);
+      color: #ecfdf5;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .app-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    .user-box {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+    }
+
+    .username-label {
+      max-width: 120px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: 600;
+    }
+
+    .settings-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      border: none;
+      background: rgba(255, 255, 255, 0.2);
+      color: #ecfdf5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .settings-btn:active {
+      transform: scale(0.95);
+    }
+
+    .menu-tabs {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .menu-tab {
+      flex: 1;
+      border-radius: 999px;
+      border: 1px solid rgba(209, 250, 229, 0.5);
+      background: rgba(16, 185, 129, 0.15);
+      color: #ecfdf5;
+      font-size: 0.9rem;
+      padding: 8px 4px;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .menu-tab.active {
+      background: #a7f3d0;
+      color: #022c22;
+      font-weight: 600;
+    }
+
+    /* CONTENT – 4/5 HÖHE */
+
+    .content-area {
+      flex: 1 1 80%;
+      min-height: 80%;
+      padding: 14px 16px 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .small-desc {
+      font-size: 0.8rem;
+      color: #047857;
+      opacity: 0.9;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* FORTSCHRITT – KALENDER */
+
+    .progress-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #ecfdf5;
+      border-radius: 16px;
+      padding: 10px 12px;
+      box-shadow: 0 4px 10px rgba(15, 118, 110, 0.08);
+      font-size: 0.9rem;
+    }
+
+    .progress-summary .label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #047857;
+    }
+
+    .progress-summary .days {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .progress-summary .value {
+      font-weight: 600;
+      color: #065f46;
+      font-size: 0.9rem;
+    }
+
+    .calendar-card {
+      background: #ecfdf5;
+      border-radius: 18px;
+      padding: 10px 12px 12px;
+      box-shadow: 0 6px 14px rgba(15, 118, 110, 0.09);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .calendar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .calendar-month-label {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--accent);
+    }
+
+    .calendar-nav {
+      display: flex;
+      gap: 6px;
+    }
+
+    .calendar-arrow {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      border: none;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .calendar-arrow:active {
+      transform: scale(0.95);
+      background: rgba(16, 185, 129, 0.25);
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      font-size: 0.72rem;
+    }
+
+    .calendar-weekday {
+      text-align: center;
+      font-weight: 600;
+      color: #047857;
+      padding-bottom: 2px;
+    }
+
+    .calendar-day {
+      text-align: center;
+      padding: 6px 0;
+      border-radius: 9px;
+      background: rgba(209, 250, 229, 0.5);
+      color: #065f46;
+      user-select: none;
+    }
+
+    .calendar-day.outside {
+      visibility: hidden;
+    }
+
+    /* neu: generelle farben für abstinente tage / ausrutscher */
+    .calendar-day.clean-range {
+      background: #22c55e;
+      color: #022c22;
+      font-weight: 600;
+    }
+
+    .calendar-day.slip-range {
+      background: var(--danger);
+      color: #7c2d12;
+      font-weight: 600;
+    }
+
+    /* (optional für heute – bleibt wie vorher, falls du es magst) */
+    .calendar-day.today.clean {
+      background: #22c55e;
+      color: #022c22;
+      font-weight: 700;
+    }
+
+    .calendar-day.today.slip {
+      background: var(--danger);
+      color: #7c2d12;
+      font-weight: 700;
+    }
+
+    .calendar-legend {
+      display: flex;
+      gap: 12px;
+      font-size: 0.75rem;
+      color: #047857;
+      margin-top: 4px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .legend-color {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+    }
+
+    .legend-color.green {
+      background: #22c55e;
+    }
+
+    .legend-color.orange {
+      background: var(--danger);
+    }
+
+    .slip-card {
+      background: #ecfdf5;
+      border-radius: 16px;
+      padding: 10px 12px;
+      box-shadow: 0 4px 12px rgba(15, 118, 110, 0.08);
+      font-size: 0.86rem;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .slip-btn {
+      border-radius: 999px;
+      border: none;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: #059669;
+      color: #ecfdf5;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 4px 10px rgba(6, 95, 70, 0.35);
+    }
+
+    .slip-btn.slipped {
+      background: #fb923c;
+      color: #1f2937;
+      box-shadow: 0 4px 10px rgba(248, 113, 22, 0.35);
+    }
+
+    .slip-note {
+      font-size: 0.75rem;
+      color: #6b7280;
+    }
+
+    /* ERSPARNIS */
+
+    .savings-card {
+      background: #ecfdf5;
+      border-radius: 18px;
+      padding: 12px 14px 14px;
+      box-shadow: 0 6px 14px rgba(15, 118, 110, 0.09);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .savings-display-wrapper {
+      background: rgba(209, 250, 229, 0.9);
+      border-radius: 14px;
+      padding: 14px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .savings-number {
+      font-weight: 800;
+      line-height: 1.1;
+      white-space: nowrap;
+      transition: font-size 0.1s;
+    }
+
+    .savings-subline {
+      font-size: 0.8rem;
+      color: #4b5563;
+    }
+
+    .savings-meta {
+      font-size: 0.78rem;
+      color: #6b7280;
+    }
+
+    /* MUTMACHER */
+
+    .mutmacher-card {
+      background: #ecfdf5;
+      border-radius: 18px;
+      padding: 12px 14px 14px;
+      box-shadow: 0 6px 14px rgba(15, 118, 110, 0.09);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      height: 100%;
+    }
+
+    .quote-box {
+      flex: 1;
+      border-radius: 14px;
+      background: rgba(209, 250, 229, 0.9);
+      padding: 14px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      color: #064e3b;
+    }
+
+    .mutmacher-btn {
+      border-radius: 999px;
+      border: none;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: rgba(6, 95, 70, 0.96);
+      color: #ecfdf5;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 4px 12px rgba(6, 95, 70, 0.4);
+    }
+
+    .mutmacher-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* OVERLAYS */
+
+    .overlay-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+
+    .overlay-box {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 18px 16px 14px;
+      width: 90%;
+      max-width: 380px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .overlay-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .overlay-text {
+      font-size: 0.85rem;
+      color: #374151;
+    }
+
+    .overlay-form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .field-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #065f46;
+    }
+
+    .field-input {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      padding: 8px 10px;
+      font-size: 0.9rem;
+    }
+
+    .field-input:focus {
+      outline: none;
+      border-color: #059669;
+      box-shadow: 0 0 0 1px rgba(5, 150, 105, 0.25);
+    }
+
+    .overlay-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .btn-primary {
+      flex: 1;
+      border-radius: 999px;
+      border: none;
+      padding: 9px 12px;
+      background: #059669;
+      color: #ecfdf5;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .btn-secondary {
+      flex: 1;
+      border-radius: 999px;
+      border: none;
+      padding: 9px 12px;
+      background: #e5e7eb;
+      color: #374151;
+      font-weight: 500;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .btn-danger {
+      background: #b91c1c;
+      color: #fef2f2;
+    }
+
+    @media (max-height: 640px) {
+      .top-menu {
+        padding-top: 8px;
+        padding-bottom: 8px;
+      }
+      .app-title {
+        font-size: 1rem;
+      }
+      .content-area {
+        padding-top: 10px;
+      }
+    }
+  </style>
+
+<link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#059669" />
+</head>
+<body>
+  <div class="app-frame">
+    <div class="app-inner">
+      <header class="top-menu">
+        <div class="app-title">Abstinenz • Selfcare</div>
+        <div class="user-box">
+          <span id="usernameDisplay" class="username-label"></span>
+          <button id="settingsBtn" class="settings-btn" aria-label="Einstellungen">⚙️</button>
+        </div>
+        <nav class="menu-tabs">
+          <button class="menu-tab active" data-target="fortschritt">Fortschritt</button>
+          <button class="menu-tab" data-target="ersparnis">Ersparnis</button>
+          <button class="menu-tab" data-target="mutmacher">Mutmacher</button>
+        </nav>
+      </header>
+
+      <main class="content-area">
+        <!-- FORTSCHRITT -->
+        <section id="fortschritt" class="section">
+          <div>
+            <h2 class="section-title">Dein Fortschritt</h2>
+            <p class="small-desc">Dein Fortschritt im Überblick.</p>
+          </div>
+
+          <div class="progress-summary">
+            <div>
+              <div class="label">Tage seit Start</div>
+              <div id="daysSinceStart" class="days">0</div>
+            </div>
+            <div>
+              <div class="label">Heutiges Datum</div>
+              <div id="todayLabel" class="value"></div>
+            </div>
+          </div>
+
+          <div class="calendar-card">
+            <div class="calendar-header">
+              <div id="calendarMonthLabel" class="calendar-month-label">–</div>
+              <div class="calendar-nav">
+                <button id="prevMonthBtn" class="calendar-arrow" aria-label="Vorheriger Monat">‹</button>
+                <button id="nextMonthBtn" class="calendar-arrow" aria-label="Nächster Monat">›</button>
+              </div>
+            </div>
+            <div id="calendarGrid" class="calendar-grid">
+              <!-- Wochentage + Tage werden per JS eingefügt -->
+            </div>
+            <div class="calendar-legend">
+              <div class="legend-item">
+                <span class="legend-color green"></span>
+                <span>Suchtmittelfrei</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-color orange"></span>
+                <span>Ausrutscher</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="slip-card">
+            <button id="slipToggleBtn" class="slip-btn">
+              <span>⚠️</span>
+              <span id="slipBtnText">Ausrutscher erfassen</span>
+            </button>
+            <p class="slip-note">
+              Der heutige Tag wird im Kalender entsprechend als Suchtmittelfrei oder Ausrutscher markiert.
+            </p>
+          </div>
+        </section>
+
+        <!-- ERSPARNIS -->
+        <section id="ersparnis" class="section hidden">
+          <div>
+            <h2 class="section-title">Ersparnis</h2>
+            <p class="small-desc">So viel hast du bisher gespart.</p>
+          </div>
+
+          <div class="savings-card">
+            <div id="savingsDisplayWrapper" class="savings-display-wrapper">
+              <div id="savingsNumber" class="savings-number">0,00&nbsp;€</div>
+            </div>
+            <div id="savingsSubline" class="savings-subline"></div>
+            <div id="savingsMeta" class="savings-meta"></div>
+          </div>
+        </section>
+
+        <!-- MUTMACHER -->
+        <section id="mutmacher" class="section hidden">
+          <div>
+            <h2 class="section-title">Mutmacher</h2>
+            <p class="small-desc">Neuer Mut für deinen Weg.</p>
+          </div>
+
+          <div class="mutmacher-card">
+            <div class="quote-box">
+              <span id="quoteText">
+                Tippe unten, um deinen ersten Mutmacher zu erhalten.
+              </span>
+            </div>
+            <button id="mutmacherBtn" class="mutmacher-btn">
+              ✨ Neuen Mutmacher anzeigen
+            </button>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- STAMMDATEN OVERLAY -->
+  <div id="stammdatenOverlay" class="overlay-backdrop hidden">
+    <div class="overlay-box">
+      <div class="overlay-title">Stammdaten-Eingabe</div>
+      <div class="overlay-text">
+        Bitte einmalig deine Stammdaten für den Überblick hinterlegen.
+      </div>
+      <form id="stammdatenForm" class="overlay-form">
+        <div>
+          <label class="field-label" for="usernameInput">Benutzername</label>
+          <input id="usernameInput" class="field-input" type="text" required />
+        </div>
+        <div>
+          <label class="field-label" for="startDateInput">Startdatum der Abstinenz</label>
+          <input id="startDateInput" class="field-input" type="date" required />
+        </div>
+        <div>
+          <label class="field-label" for="weeklySpendingInput">
+            Bisher wöchentliche Ausgaben für Suchtmittel in €
+          </label>
+          <input id="weeklySpendingInput" class="field-input" type="number" min="0" step="0.01" required />
+        </div>
+        <div class="overlay-actions">
+          <button type="button" id="stammdatenCancelBtn" class="btn-secondary">
+            Abbrechen
+          </button>
+          <button type="submit" class="btn-primary">
+            Speichern
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- EINSTELLUNGEN OVERLAY -->
+  <div id="settingsOverlay" class="overlay-backdrop hidden">
+    <div class="overlay-box">
+      <div class="overlay-title">Einstellungen</div>
+      <div class="overlay-text">
+        Hier kannst du Stammdaten anpassen oder das Tool zurücksetzen.
+      </div>
+      <div class="overlay-actions">
+        <button id="editStammdatenBtn" class="btn-primary">
+          Stammdaten bearbeiten
+        </button>
+        <button id="resetToolBtn" class="btn-secondary btn-danger">
+          Tool zurücksetzen
+        </button>
+      </div>
+      <div class="overlay-actions">
+        <button id="settingsCloseBtn" class="btn-secondary">
+          Schließen
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const STORAGE_KEYS = {
+        STAMMDATEN: "abstinenz_stammdaten",
+        SLIPS: "abstinenz_slips"
+      };
+
+      const menuTabs = document.querySelectorAll(".menu-tab");
+      const sections = document.querySelectorAll(".section");
+
+      const usernameDisplayEl = document.getElementById("usernameDisplay");
+      const settingsBtn = document.getElementById("settingsBtn");
+
+      const stammdatenOverlay = document.getElementById("stammdatenOverlay");
+      const stammdatenForm = document.getElementById("stammdatenForm");
+      const usernameInput = document.getElementById("usernameInput");
+      const startDateInput = document.getElementById("startDateInput");
+      const weeklySpendingInput = document.getElementById("weeklySpendingInput");
+      const stammdatenCancelBtn = document.getElementById("stammdatenCancelBtn");
+
+      const settingsOverlay = document.getElementById("settingsOverlay");
+      const settingsCloseBtn = document.getElementById("settingsCloseBtn");
+      const editStammdatenBtn = document.getElementById("editStammdatenBtn");
+      const resetToolBtn = document.getElementById("resetToolBtn");
+
+      const daysSinceStartEl = document.getElementById("daysSinceStart");
+      const todayLabelEl = document.getElementById("todayLabel");
+
+      const calendarGridEl = document.getElementById("calendarGrid");
+      const calendarMonthLabelEl = document.getElementById("calendarMonthLabel");
+      const prevMonthBtn = document.getElementById("prevMonthBtn");
+      const nextMonthBtn = document.getElementById("nextMonthBtn");
+
+      const slipToggleBtn = document.getElementById("slipToggleBtn");
+      const slipBtnText = document.getElementById("slipBtnText");
+
+      const savingsNumberEl = document.getElementById("savingsNumber");
+      const savingsWrapperEl = document.getElementById("savingsDisplayWrapper");
+      const savingsSublineEl = document.getElementById("savingsSubline");
+      const savingsMetaEl = document.getElementById("savingsMeta");
+
+      const quoteTextEl = document.getElementById("quoteText");
+      const mutmacherBtn = document.getElementById("mutmacherBtn");
+
+      const today = new Date();
+      const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+      let stammdatenMode = "first"; // "first" oder "edit"
+      let currentMonth = todayDateOnly.getMonth();
+      let currentYear = todayDateOnly.getFullYear();
+      let stammdaten = null;
+      let savingsAnimationFrame = null;
+      let lastQuoteIndex = -1;
+
+      function formatDateGerman(dateObj) {
+        return dateObj.toLocaleDateString("de-DE", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric"
+        });
+      }
+
+      function formatEuro(value) {
+        return value
+          .toLocaleString("de-DE", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }) + " €";
+      }
+
+      function getStammdaten() {
+        const raw = localStorage.getItem(STORAGE_KEYS.STAMMDATEN);
+        if (!raw) return null;
+        try {
+          return JSON.parse(raw);
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function setStammdaten(data) {
+        stammdaten = data;
+        localStorage.setItem(STORAGE_KEYS.STAMMDATEN, JSON.stringify(data));
+      }
+
+      function getSlips() {
+        const raw = localStorage.getItem(STORAGE_KEYS.SLIPS);
+        if (!raw) return [];
+        try {
+          const arr = JSON.parse(raw);
+          return Array.isArray(arr) ? arr : [];
+        } catch (e) {
+          return [];
+        }
+      }
+
+      function setSlips(arr) {
+        localStorage.setItem(STORAGE_KEYS.SLIPS, JSON.stringify(arr));
+      }
+
+      function dateKey(dateObj) {
+        const y = dateObj.getFullYear();
+        const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+        const d = String(dateObj.getDate()).padStart(2, "0");
+        return y + "-" + m + "-" + d;
+      }
+
+      function hasSlip(dateObj) {
+        const key = dateKey(dateObj);
+        return getSlips().includes(key);
+      }
+
+      function addSlip(dateObj) {
+        const key = dateKey(dateObj);
+        const slips = getSlips();
+        if (!slips.includes(key)) {
+          slips.push(key);
+          setSlips(slips);
+        }
+      }
+
+      function removeSlip(dateObj) {
+        const key = dateKey(dateObj);
+        const slips = getSlips().filter((k) => k !== key);
+        setSlips(slips);
+      }
+
+      function calcDaysSinceStart() {
+        if (!stammdaten || !stammdaten.startDate) return 1;
+        const start = new Date(stammdaten.startDate);
+        const startDateOnly = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+        const msPerDay = 24 * 60 * 60 * 1000;
+        const diff = todayDateOnly.getTime() - startDateOnly.getTime();
+        let days = Math.floor(diff / msPerDay) + 1;
+        if (days < 1) days = 1;
+        return days;
+      }
+
+      function updateUsernameDisplay() {
+        if (stammdaten && stammdaten.username) {
+          usernameDisplayEl.textContent = stammdaten.username;
+        } else {
+          usernameDisplayEl.textContent = "";
+        }
+      }
+
+      function updateDaysAndToday() {
+        daysSinceStartEl.textContent = calcDaysSinceStart();
+        todayLabelEl.textContent = formatDateGerman(todayDateOnly);
+      }
+
+      function setupCalendarWeekdays() {
+        const weekdays = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
+        weekdays.forEach((day) => {
+          const el = document.createElement("div");
+          el.className = "calendar-weekday";
+          el.textContent = day;
+          calendarGridEl.appendChild(el);
+        });
+      }
+
+      function clearCalendarDays() {
+        while (calendarGridEl.children.length > 7) {
+          calendarGridEl.removeChild(calendarGridEl.lastChild);
+        }
+      }
+
+      function renderCalendar() {
+        clearCalendarDays();
+
+        const firstOfMonth = new Date(currentYear, currentMonth, 1);
+        const monthName = firstOfMonth.toLocaleDateString("de-DE", {
+          month: "long",
+          year: "numeric"
+        });
+        const label =
+          monthName.charAt(0).toUpperCase() + monthName.slice(1);
+        calendarMonthLabelEl.textContent = label;
+
+        const firstDayIndex = (firstOfMonth.getDay() + 6) % 7;
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+        // Startdatum für Farbe berechnen
+        let startDateOnly = null;
+        if (stammdaten && stammdaten.startDate) {
+          const sd = new Date(stammdaten.startDate);
+          startDateOnly = new Date(sd.getFullYear(), sd.getMonth(), sd.getDate());
+        }
+
+        for (let i = 0; i < firstDayIndex; i++) {
+          const blank = document.createElement("div");
+          blank.className = "calendar-day outside";
+          calendarGridEl.appendChild(blank);
+        }
+
+        for (let day = 1; day <= daysInMonth; day++) {
+          const cellDate = new Date(currentYear, currentMonth, day);
+          const dayEl = document.createElement("div");
+          dayEl.className = "calendar-day";
+          dayEl.textContent = String(day);
+
+          const isToday =
+            cellDate.getFullYear() === todayDateOnly.getFullYear() &&
+            cellDate.getMonth() === todayDateOnly.getMonth() &&
+            cellDate.getDate() === todayDateOnly.getDate();
+
+          // Liegt der Tag im Abstinenz-Zeitraum (Startdatum bis heute)?
+          let inAbstinenceRange = false;
+          if (startDateOnly) {
+            const time = cellDate.getTime();
+            if (time >= startDateOnly.getTime() && time <= todayDateOnly.getTime()) {
+              inAbstinenceRange = true;
+            }
+          }
+
+          if (inAbstinenceRange) {
+            if (hasSlip(cellDate)) {
+              dayEl.classList.add("slip-range");   // orange
+            } else {
+              dayEl.classList.add("clean-range");  // grün
+            }
+          }
+
+          // (optional) heutiger Tag zusätzlich hervorheben – Farbe wie oben
+          if (isToday) {
+            dayEl.classList.add("today");
+            if (hasSlip(todayDateOnly)) {
+              dayEl.classList.add("slip");
+            } else {
+              dayEl.classList.add("clean");
+            }
+          }
+
+          calendarGridEl.appendChild(dayEl);
+        }
+      }
+
+      function updateSlipButtonState() {
+        const todaySlip = hasSlip(todayDateOnly);
+        if (todaySlip) {
+          slipToggleBtn.classList.add("slipped");
+          slipBtnText.textContent = "Ausrutscher entfernen";
+        } else {
+          slipToggleBtn.classList.remove("slipped");
+          slipBtnText.textContent = "Ausrutscher erfassen";
+        }
+      }
+
+      function getCurrentSavingsValue() {
+        if (!stammdaten || !stammdaten.weeklySpending) return 0;
+        const weekly = Number(stammdaten.weeklySpending) || 0;
+        const perDay = weekly / 7;
+        const days = calcDaysSinceStart();
+        return perDay * days;
+      }
+
+      function adjustSavingsFontSize() {
+        const containerWidth = savingsWrapperEl.clientWidth || 1;
+        const maxFont = 38;
+        const minFont = 16;
+        let fontSize = maxFont;
+        savingsNumberEl.style.fontSize = fontSize + "px";
+
+        while (fontSize > minFont && savingsNumberEl.scrollWidth > containerWidth * 0.9) {
+          fontSize -= 1;
+          savingsNumberEl.style.fontSize = fontSize + "px";
+        }
+      }
+
+      function startSavingsAnimation() {
+        if (!stammdaten) return;
+        if (savingsAnimationFrame) {
+          cancelAnimationFrame(savingsAnimationFrame);
+        }
+
+        const target = getCurrentSavingsValue();
+        const duration = 1000;
+        const startTime = performance.now();
+
+        function step(now) {
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const value = target * progress;
+          savingsNumberEl.innerHTML = formatEuro(value).replace(" ", "&nbsp;");
+          adjustSavingsFontSize();
+          if (progress < 1) {
+            savingsAnimationFrame = requestAnimationFrame(step);
+          }
+        }
+
+        requestAnimationFrame(step);
+
+        const weekly = Number(stammdaten.weeklySpending) || 0;
+        const days = calcDaysSinceStart();
+        const perDay = weekly / 7;
+
+        savingsSublineEl.textContent =
+          "Basis: " + formatEuro(weekly) + " pro Woche (" + formatEuro(perDay) + " pro Tag).";
+
+        savingsMetaEl.textContent =
+          "Startdatum: " +
+          formatDateGerman(new Date(stammdaten.startDate)) +
+          " • Abstinente Tage: " +
+          days;
+      }
+
+      function openStammdatenOverlay(mode) {
+        stammdatenMode = mode;
+        stammdatenCancelBtn.style.display = mode === "first" ? "none" : "inline-flex";
+
+        if (mode === "edit" && stammdaten) {
+          usernameInput.value = stammdaten.username || "";
+          startDateInput.value = stammdaten.startDate || "";
+          weeklySpendingInput.value =
+            stammdaten.weeklySpending != null
+              ? Number(stammdaten.weeklySpending).toFixed(2)
+              : "";
+        } else {
+          usernameInput.value = "";
+          startDateInput.value = "";
+          weeklySpendingInput.value = "";
+        }
+
+        stammdatenOverlay.classList.remove("hidden");
+      }
+
+      function closeStammdatenOverlay() {
+        stammdatenOverlay.classList.add("hidden");
+      }
+
+      function openSettingsOverlay() {
+        settingsOverlay.classList.remove("hidden");
+      }
+
+      function closeSettingsOverlay() {
+        settingsOverlay.classList.add("hidden");
+      }
+
+      // Navigation Hauptmenü
+      menuTabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const target = tab.getAttribute("data-target");
+          menuTabs.forEach((t) => t.classList.remove("active"));
+          tab.classList.add("active");
+
+          sections.forEach((sec) => {
+            if (sec.id === target) {
+              sec.classList.remove("hidden");
+            } else {
+              sec.classList.add("hidden");
+            }
+          });
+
+          if (target === "ersparnis") {
+            startSavingsAnimation();
+          }
+        });
+      });
+
+      // Kalender initial
+      setupCalendarWeekdays();
+      renderCalendar();
+
+      prevMonthBtn.addEventListener("click", () => {
+        currentMonth--;
+        if (currentMonth < 0) {
+          currentMonth = 11;
+          currentYear--;
+        }
+        renderCalendar();
+      });
+
+      nextMonthBtn.addEventListener("click", () => {
+        currentMonth++;
+        if (currentMonth > 11) {
+          currentMonth = 0;
+          currentYear++;
+        }
+        renderCalendar();
+      });
+
+      // Slip-Button
+      slipToggleBtn.addEventListener("click", () => {
+        const hasTodaySlip = hasSlip(todayDateOnly);
+        const msg = hasTodaySlip
+          ? "Sind Sie sicher, dass der Ausrutscher für heute entfernt werden soll?"
+          : "Sind Sie sicher, dass Sie einen Ausrutscher für heute erfassen möchten?";
+        if (!window.confirm(msg)) return;
+
+        if (hasTodaySlip) {
+          removeSlip(todayDateOnly);
+        } else {
+          addSlip(todayDateOnly);
+        }
+        updateSlipButtonState();
+        renderCalendar();
+      });
+
+      // Einstellungen
+      settingsBtn.addEventListener("click", openSettingsOverlay);
+      settingsCloseBtn.addEventListener("click", closeSettingsOverlay);
+
+      editStammdatenBtn.addEventListener("click", () => {
+        if (!window.confirm("Sind Sie sicher, dass Sie die Stammdaten bearbeiten möchten?")) {
+          return;
+        }
+        closeSettingsOverlay();
+        openStammdatenOverlay("edit");
+      });
+
+      resetToolBtn.addEventListener("click", () => {
+        if (!window.confirm("Sind Sie sicher, dass Sie alle Daten zurücksetzen möchten?")) {
+          return;
+        }
+        localStorage.removeItem(STORAGE_KEYS.STAMMDATEN);
+        localStorage.removeItem(STORAGE_KEYS.SLIPS);
+        window.location.reload();
+      });
+
+      // Stammdaten-Form
+      stammdatenForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const username = usernameInput.value.trim();
+        const startDateVal = startDateInput.value;
+        const weeklyVal = weeklySpendingInput.value;
+
+        if (!username || !startDateVal || weeklyVal === "") {
+          return;
+        }
+
+        const weekly = Number(weeklyVal.replace(",", "."));
+        if (isNaN(weekly) || weekly < 0) {
+          alert("Bitte einen gültigen Betrag für die wöchentlichen Ausgaben eingeben.");
+          return;
+        }
+
+        const newStammdaten = {
+          username: username,
+          startDate: startDateVal,
+          weeklySpending: weekly
+        };
+
+        setStammdaten(newStammdaten);
+        updateUsernameDisplay();
+        updateDaysAndToday();
+        renderCalendar();
+        updateSlipButtonState();
+        closeStammdatenOverlay();
+      });
+
+      stammdatenCancelBtn.addEventListener("click", () => {
+        closeStammdatenOverlay();
+      });
+
+      // Mutmacher
+      const mutmacherSprueche = [
+        "Heute bleibe ich mir treu – ein Tag nach dem anderen.",
+        "Jeder nüchterne Tag ist ein Sieg, den dir niemand nehmen kann.",
+        "Du bist stärker als jede Gewohnheit.",
+        "Nicht der Ausrutscher definiert dich, sondern dass du wieder aufstehst.",
+        "Ein klarer Kopf ist dein größtes Geschenk an dich selbst.",
+        "Selbstfürsorge beginnt damit, heute gut zu dir zu sein.",
+        "Du musst nicht perfekt sein, nur beharrlich.",
+        "Jeder Tag ohne Ausrutscher ist ein stilles Meisterwerk.",
+        "Du bist auf dem richtigen Weg, auch wenn er sich manchmal schwer anfühlt.",
+        "Deine Zukunft ist wichtiger als jeder kurze Moment der Betäubung.",
+        "Du machst das für dich, nicht für andere.",
+        "Heute ist ein guter Tag, um stolz auf dich zu sein.",
+        "Kleine Schritte bringen dich zu großen Veränderungen.",
+        "Du darfst müde sein – aufgeben musst du nicht.",
+        "Jeder klare Morgen ist ein neues Versprechen an dich selbst.",
+        "Du bist der Beweis, dass Veränderung möglich ist.",
+        "Dein Wert hängt nicht von deinen Ausrutschern ab.",
+        "Selbstmitgefühl ist dein Kompass, nicht Selbstkritik.",
+        "Ein Rückfall ist eine Episode, kein Charakterzug.",
+        "Du wachst heute auf und hast wieder eine Chance.",
+        "Mut heißt nicht, keine Angst zu haben, sondern trotzdem weiterzugehen.",
+        "Du hast schon so viel geschafft, auch wenn du es manchmal vergisst.",
+        "Es ist okay, Hilfe zu brauchen – Stärke zeigt sich im Annehmen.",
+        "Du darfst langsam gehen, Hauptsache du gehst weiter.",
+        "Jeder Tag, an dem du dich erinnerst, warum du angefangen hast, stärkt dich.",
+        "Heute entscheidest du dich bewusst für dich – das ist Selbstliebe.",
+        "Du bist nicht deine Vergangenheit, du bist deine Entscheidung im Jetzt.",
+        "Ausruhen ist erlaubt, aufgeben nicht.",
+        "Dein Weg ist einzigartig – Vergleiche rauben dir nur Kraft.",
+        "Du musst nicht alles heute schaffen, nur den nächsten Schritt.",
+        "Dein Nein zu alten Mustern ist ein Ja zu deinem Leben.",
+        "Ein schwieriger Tag macht deine Fortschritte nicht zunichte.",
+        "Auch leise Erfolge zählen – und du sammelst sie täglich.",
+        "Es ist mutig, dein altes Leben loszulassen.",
+        "Du lernst gerade, dir selbst zu vertrauen – das braucht Zeit.",
+        "Du bist mehr als deine Gedanken von gestern.",
+        "Jeder bewusste Moment ist ein Stück Freiheit.",
+        "Der wichtigste Mensch in deinem Leben bist du.",
+        "Selbstfürsorge ist kein Egoismus, sondern Notwendigkeit.",
+        "Du bist es wert, klar zu fühlen und wach zu leben.",
+        "Manchmal ist das Tapferste, einfach nüchtern zu bleiben.",
+        "Du darfst stolz auf jeden Tag sein, an dem du weitergemacht hast.",
+        "Dein Körper und dein Geist danken dir für jede gute Entscheidung.",
+        "Schon jetzt bist du jemand, der nicht aufgibt.",
+        "Du darfst Grenzen setzen – auch dir selbst gegenüber.",
+        "Heute brauchst du keine Flucht – du darfst einfach da sein.",
+        "Du kommst nicht zufällig so weit – du arbeitest hart dafür.",
+        "Selbst wenn du strauchelst: dein Weg geht weiter.",
+        "Dein Mut ist größer als jeder Impuls von gestern.",
+        "Jeder Tag in Klarheit schreibt deine Geschichte neu.",
+        "Es ist in Ordnung, schwach zu sein – du musst nur ehrlich bleiben.",
+        "Du musst nicht alles im Griff haben, nur deine nächste Entscheidung.",
+        "In dir steckt mehr Kraft, als du gerade siehst.",
+        "Du bist auf deiner Seite – das ist deine größte Stärke.",
+        "Dein Nein heute ist ein Ja zu morgen.",
+        "Jeder Tag, an dem du dich um dich kümmerst, heilt ein Stück in dir.",
+        "Du hast das Recht auf ein Leben, das sich gut anfühlt.",
+        "Du bist nicht allein mit deinem Kampf – aber du bist einzigartig in deinem Mut.",
+        "Dein Durchhalten heute nimmt dir morgen Gewicht von den Schultern.",
+        "Du kannst jederzeit neu beginnen, auch mitten am Tag.",
+        "Selbstdisziplin ist eine Form von Liebe zu dir selbst.",
+        "Du darfst lernen, dir zu vertrauen – Schritt für Schritt.",
+        "Jede bewusste Entscheidung stärkt dein neues Leben.",
+        "Du bist nicht gescheitert, wenn du hinfällst – nur, wenn du liegenbleibst.",
+        "Es ist Stärke, deine Trigger zu kennen und sanft mit dir zu sein.",
+        "Du musst nicht funktionieren, du darfst fühlen.",
+        "Deine Gefühle gehen vorbei – dein Fortschritt bleibt.",
+        "Heute zählst du – nicht die Substanz, nicht das alte Muster.",
+        "Nüchtern zu bleiben ist ein tägliches Geschenk an dein zukünftiges Ich.",
+        "Du bist es wert, jeden Morgen klar aufzuwachen.",
+        "Jeder Abend, an dem du durchgehalten hast, ist ein kleiner Sieg.",
+        "Du brauchst keine Betäubung, wenn du dir selbst vertraust.",
+        "Güte zu dir selbst ist das Fundament deiner Abstinenz.",
+        "Du darfst lernen, stolz auf dich zu sein, nicht nur streng.",
+        "Dein innerer Frieden ist wichtiger als jeder kurze Kick.",
+        "Ein schlechter Tag macht dich nicht zu einem schlechten Menschen.",
+        "Du trägst die Lösung in dir – Schritt für Schritt wird sie sichtbar.",
+        "Du bist ein Mensch im Prozess, kein fertiges Produkt.",
+        "Heute entscheidest du dich wieder neu – und das ist genug.",
+        "Deine Stärke zeigt sich im Weitermachen, nicht im Perfektsein.",
+        "Du baust jeden Tag ein neues, stabiles Fundament.",
+        "Deine Klarheit heute ist ein Geschenk an alle, die dich lieben.",
+        "Du bist nicht zu spät – du bist jetzt hier, und das zählt.",
+        "Selbstfürsorge bedeutet auch, freundlich mit deinen Rückschritten zu sein.",
+        "Du darfst Fehler machen und trotzdem weiter wachsen.",
+        "Dein Herz weiß, warum du diesen Weg gewählt hast.",
+        "Du bist mutig, weil du hinschaust, statt zu fliehen.",
+        "Jeder klare Atemzug erinnert dich daran: Du lebst bewusst.",
+        "Du bist nicht schwach, wenn du Hilfe annimmst – du bist weise.",
+        "Heute reicht es, dass du nicht aufgibst.",
+        "Du bist auf dem Weg vom Überleben zum wirklichen Leben.",
+        "Dein Durchhalten heute schreibt morgen Geschichte.",
+        "Du bist mehr als das, was du loslässt.",
+        "Jede Stunde, die du dir treu bleibst, stärkt deine Freiheit.",
+        "Du kannst stolz auf dich sein, auch wenn es noch nicht perfekt ist.",
+        "Dein Weg ist kein Sprint, sondern ein liebevoller Marathon mit dir selbst."
+      ];
+
+      function showRandomQuote() {
+        if (!mutmacherSprueche.length) return;
+        let index = Math.floor(Math.random() * mutmacherSprueche.length);
+        if (mutmacherSprueche.length > 1) {
+          while (index === lastQuoteIndex) {
+            index = Math.floor(Math.random() * mutmacherSprueche.length);
+          }
+        }
+        lastQuoteIndex = index;
+        quoteTextEl.textContent = mutmacherSprueche[index];
+      }
+
+      mutmacherBtn.addEventListener("click", showRandomQuote);
+
+      window.addEventListener("resize", adjustSavingsFontSize);
+
+      // INITIALISIERUNG
+      stammdaten = getStammdaten();
+      if (!stammdaten) {
+        openStammdatenOverlay("first");
+      } else {
+        updateUsernameDisplay();
+        updateDaysAndToday();
+        updateSlipButtonState();
+        renderCalendar();
+      }
+
+      todayLabelEl.textContent = formatDateGerman(todayDateOnly);
+      updateDaysAndToday();
+      updateSlipButtonState();
+    })();
+  </script>
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker
+        .register("./service-worker.js")
+        .catch(function (err) {
+          console.error("Service Worker Registrierung fehlgeschlagen:", err);
+        });
+    });
+  }
+</script>
+</body>
+</html>
+</body>
+</html>
